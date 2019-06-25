@@ -1,0 +1,4 @@
+mixin item-button(type, option, text)
+
+    include button
+    +button(type, option, text)(data-item-btn=type.toLowerCase())

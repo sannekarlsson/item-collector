@@ -1,0 +1,51 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "Frontend item collector",
+  "private": true,
+  "author": "Sanne Karlsson",
+  "license": "MIT",
+  "scripts": {
+    "clean": "rm -rf .cache & rm -rf public",
+    "dev": "nodemon -e pug --watch frontend.js --watch views frontend-server.js",
+    "lint:js": "eslint src/scripts/main.js frontend.js || exit 0",
+    "prestart": "#npm run clean -s #& npm run lint:js",
+    "start": "node frontend-server.js"
+  },
+  "dependencies": {
+    "axios": "^0.19.0",
+    "express": "^4.17.0",
+    "helmet": "^3.18.0",
+    "mongoose": "^5.5.10",
+    "parcel-bundler": "^1.12.3",
+    "pug": "^2.0.3"
+  },
+  "devDependencies": {
+    "acorn": "^6.1.1",
+    "autoprefixer": "^9.5.1",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.16.0",
+    "morgan": "^1.9.1",
+    "nodemon": "^1.19.0"
+  },
+  "browserslist": [
+    "> 0.5%",
+    "last 2 versions",
+    "Firefox ESR",
+    "not dead",
+    "iOS > 10"
+  ],
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "node": true
+    },
+    "extends": "eslint:recommended",
+    "parser": "babel-eslint"
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": true
+    }
+  }
+}

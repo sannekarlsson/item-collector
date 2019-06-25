@@ -1,0 +1,11 @@
+li.item.slide-transition(data-item-id=item._id, class=enter || '')
+    .item-content.vertical-center.vertical-padding
+        input.item-name.input(type='text', name='item-name' data-value=item.name value=item.name disabled)
+        include item-button
+        +item-button('Edit', 'Undo')
+            
+    .slide-transition.edit-container
+        .btn-container.row.padding-bottom
+            include item-button
+            +item-button('Update')
+            +item-button('Delete')
