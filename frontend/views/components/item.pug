@@ -1,6 +1,6 @@
 li.item.slide-transition(data-item-id=item._id, class=enter || '')
     .item-content.vertical-center.vertical-padding
-        input.item-name.input(type='text', name='item-name' data-value=item.name value=item.name disabled)
+        input.item-name.input(type='text', name='item-name' data-value=item.name value=item.name disabled autocomplete='off')
         include item-button
         +item-button('Edit', 'Undo')
             
