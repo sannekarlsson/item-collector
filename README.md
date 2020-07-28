@@ -1,8 +1,18 @@
 # Item collector 
 
+## Updated
+
+Divided into two repositories.
+
+[Backend API](https://github.com/sannekarlsson/item-collector-api)
+
+[Frontend](https://github.com/sannekarlsson/item-collector-frontend)
+
+
 Full stack app with a backend CRUD api tied to a mongo database.
 
-[Running at glitch](https://item-collector.glitch.me/)
+[Running at glitch](https://item-collector-frontend.glitch.me/)
+
 
 ## Functionality
 
