@@ -230,10 +230,10 @@ const updateItemHandler = function (itemElement) {
         return;
     }
 
-    axios.put('/' + id, { name })
+    axios.put('/' + id, { name, ui: true })
         .then(function (res) {
 
-            if (res.data.name === 404) {
+            if (res.data.error === 404) {
                 // Item not found, remove it from ui
                 displayModal(errorMessage('The item has been deleted by someone else', false));
                 deleteElement(itemElement);

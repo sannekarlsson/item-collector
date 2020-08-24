@@ -13,6 +13,8 @@ const app = express();
 const uiRouter = express.Router();
 const apiRouter = express.Router();
 
+const apiPath = '/api/items';
+
 // Path to views 
 app.set('views', path.join(__dirname, 'views'));
 
@@ -71,20 +73,33 @@ apiRouter.route('/:id')
     .delete(items.deleteItem);
 
 app.use(uiRouter);
-app.use('/api/items', apiRouter);
+app.use(apiPath, apiRouter);
 
 
 //================================================
 // Error handling
 //================================================
 app.use((req, res, next) => {
-    const error = new Error(`Not Found -- ${req.originalUrl}`);
+    const error = new Error('Not Found');
     error.status = 404;
     next(error);
 })
 
 app.use((error, req, res, next) => {
-    res.status(error.status || 500).send(error.message);
+
+    const status = error.status || 500;
+    res.status(status);
+
+    // API request
+    if (req.path.startsWith(apiPath + '/')) {
+        return res.send(error.message);
+    }
+
+    // UI request, return error page
+    return res.render('error', {
+        status,
+        message: error.message
+    });
 });
 
 module.exports = app;

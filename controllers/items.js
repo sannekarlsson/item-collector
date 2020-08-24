@@ -66,10 +66,17 @@ exports.updateItem = (req, res, next) => {
     })
         .then(item => {
             if (!item) {
+
+                // Request from ui
+                if (req.body.ui) {
+                    return res.send({ error: 404 });
+                }
+
+                // Request from api
                 return res.status(404).send(errorOn.id);
             }
 
-            res.json(item);
+            return res.json(item);
         })
         .catch(error => next(error));
 }
