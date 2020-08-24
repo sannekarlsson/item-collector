@@ -1,0 +1,24 @@
+-var default_title = 'Item collector'
+
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    meta(http-equiv='X-UA-Compatible' content='ie=edge')
+    link(rel='shortcut icon' href='images/favicon.png' type='image/png')
+    title= title || default_title
+    //- Fonts
+    link(rel='stylesheet', href='https://fonts.googleapis.com/css2?family=Montserrat:wght@500&family=Quicksand&display=swap')
+    //- Site css
+    style
+      include ../public/styles/main.css
+  body
+    header.header-container.vertical-padding
+      h1.header-title= title || default_title
+    main.main-container
+      block content
+    //- Modal used for error messages and alerts
+    include components/modal
+    //- Site js
+    script(src="scripts/main.js")

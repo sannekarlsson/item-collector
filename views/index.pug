@@ -1,0 +1,30 @@
+extends template
+
+block content
+    section.add-item-container.vertical-padding
+        -var addItem = 'add-item'
+        .error-message(data-input-error=addItem)
+        form(data-form=addItem)
+            input.input.vertical-margin(type='text', name=addItem, aria-label='Add item', placeholder='Item name')
+            include components/button
+            +button('add', null, 'Add item')(type='submit' value='Add item')
+
+    section.items-container.margin-top.vertical-padding
+        ul.items
+            each item in items
+                include components/item
+
+    section.delete-all-container.vertical-padding
+        include components/button
+        +button('delete', null, 'Delete all')(data-btn='delete all')
+
+    .hidden
+        include components/svg-symbol
+        svg(xmlns='http://www.w3.org/2000/svg')
+            +svg-symbol('add')
+            +svg-symbol('close')
+            +svg-symbol('delete')
+            +svg-symbol('edit')
+            +svg-symbol('undo')
+            +svg-symbol('update')
+            

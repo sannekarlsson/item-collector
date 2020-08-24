@@ -1,0 +1,6 @@
+mixin svg-use-symbol(name)
+
+    svg(xmlns='http://www.w3.org/2000/svg', 
+        width='20%' height='20%',
+        class='icon ' + name + '-icon')
+        use(href= '#' + name + '-icon')
