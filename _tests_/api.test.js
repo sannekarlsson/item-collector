@@ -30,9 +30,9 @@ describe('Api test', () => {
         await Item.deleteMany({})
     })
 
-    afterAll(async (done) => {
+    afterAll(async () => {
         await mongoose.connection.close()
-        await server.close(done)
+        await server.close()
     })
 
     // Assert the endpoints exist and function as expected
@@ -120,11 +120,14 @@ describe('Api test', () => {
         //================================================
         describe(`DELETE ${itemsApi}`, () => {
             test('deletes all items', async () => {
-                expect.assertions(4)
+
+                expect.assertions(2)
+
+                const items = ['Apple', 'Orange', 'Pineapple'];
 
                 // Add some items
                 // https://stackoverflow.com/a/37576787
-                await Promise.all(['Apple', 'Orange', 'Pineapple'].map(async (item) => {
+                await Promise.all(items.map(async (item) => {
                     await request(server)
                         .post(itemsApi)
                         .send({ name: item })
@@ -136,24 +139,15 @@ describe('Api test', () => {
                     .delete(itemsApi)
                     .expect(200)
 
-                expect(body).toHaveProperty('ok')
-                expect(body.ok).toBe(1)
-                expect(body).toHaveProperty('n')
-                expect(body.n).toBe(3)
-
+                expect(body).toHaveProperty('deletedCount')
+                expect(body.deletedCount).toEqual(items.length)
             })
 
             test('deletes zero items', async () => {
-                expect.assertions(4)
 
-                const { body } = await request(server)
+                await request(server)
                     .delete(itemsApi)
-                    .expect(200)
-
-                expect(body).toHaveProperty('ok')
-                expect(body.ok).toBe(1)
-                expect(body).toHaveProperty('n')
-                expect(body.n).toBe(0)
+                    .expect(404)
             })
         })
 
@@ -274,7 +268,6 @@ describe('Api test', () => {
                 await request(server)
                     .delete(`${itemsApi}/5ccb1fac5572f3b82688dc40`)
                     .expect(404)
-                // .expect(200)
             })
         })
     })

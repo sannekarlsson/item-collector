@@ -1,10 +1,9 @@
-const { body, validationResult } = require('express-validator/check')
-const { sanitizeBody } = require('express-validator/filter')
+const { body, validationResult } = require('express-validator');
 
 exports.name = [
     body('name').trim().isLength({ min: 1 }),
 
-    sanitizeBody('name').escape(),
+    body('name').escape(),
 
     validateResult
 ]

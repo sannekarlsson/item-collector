@@ -8,6 +8,7 @@
 /coverage
 
 # Parcel
+.parcel-cache
 /.cache
 
 # misc

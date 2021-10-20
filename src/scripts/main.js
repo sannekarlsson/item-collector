@@ -1,8 +1,6 @@
 'use strict';
 
-// Http requests with axios
-const axios = require('axios');
-axios.defaults.baseURL = process.env.API_URL;
+const apiUrl = process.env.API_URL;
 
 const items = document.querySelector('.items');
 const addItemForm = document.querySelector('[data-form="add-item"]');
@@ -27,18 +25,18 @@ const deleteAllReminder = '<p>Reminder.</p>' +
 
 // Remove slide in transition associated styles
 // to have the default item functionality
-const removeSlideInAttributes = function (item) {
+function removeSlideInAttributes(item) {
     item.classList.remove('enter');
     item.removeAttribute('style');
 }
 
 // Slide in transition
-const slideInAddedItem = function (addedItem) {
+function slideInAddedItem(addedItem) {
     addedItem.style.maxHeight = addedItem.scrollHeight + 'px';
     addedItem.style.opacity = 1;
 }
 
-const slideTransition = function (element) {
+function slideTransition(element) {
 
     if (element.style.maxHeight) {
         element.style.maxHeight = null;
@@ -52,7 +50,7 @@ const slideTransition = function (element) {
  *********************************************************/
 
 // Receives a pug rendered HTML string of the item element.
-const addItemToItems = function (itemElement) {
+function addItemToItems(itemElement) {
     items.insertAdjacentHTML('afterbegin', itemElement);
 
     slideInAddedItem(items.firstElementChild);
@@ -61,11 +59,11 @@ const addItemToItems = function (itemElement) {
 
 // The delete class sets max-height to 0 which starts a transition.
 // The element will be removed from the DOM on event transitionend.
-const deleteElement = function (element) {
+function deleteElement(element) {
     element.classList.add('delete');
 }
 
-const deleteAllItems = function () {
+function deleteAllItems() {
 
     while (items.firstChild) {
         items.removeChild(items.firstChild);
@@ -76,7 +74,7 @@ const deleteAllItems = function () {
  *  Item editing
  *********************************************************/
 
-const disableItemEdit = function (itemName, cancel = false) {
+function disableItemEdit(itemName, cancel = false) {
 
     // Disable input 
     itemName.disabled = true;
@@ -86,7 +84,7 @@ const disableItemEdit = function (itemName, cancel = false) {
         itemName.value = itemName.dataset.value;
 }
 
-const enableItemEdit = function (itemName) {
+function enableItemEdit(itemName) {
 
     // Enable input
     itemName.disabled = false;
@@ -99,7 +97,7 @@ const enableItemEdit = function (itemName) {
     itemName.setSelectionRange(cursorPosition, cursorPosition);
 }
 
-const toggleItemEdit = function (itemElement, cancel) {
+function toggleItemEdit(itemElement, cancel) {
 
     slideTransition(itemElement.querySelector('.slide-transition'));
     const itemName = itemElement.querySelector('.item-name');
@@ -116,20 +114,20 @@ const toggleItemEdit = function (itemElement, cancel) {
  *  Error handling
  *********************************************************/
 
-const displayInputError = function (message) {
+function displayInputError(message) {
 
     addInputError.textContent = message;
     addItem.classList.add('error-border');
     addItem.focus();
 }
 
-const hideInputError = function () {
+function hideInputError() {
 
     addInputError.textContent = '';
     addItem.classList.remove('error-border');
 }
 
-const errorMessage = function (message, tryAgain = true) {
+function errorMessage(message, tryAgain = true) {
 
     return '<p>Sorry.</p>' +
         '<p class="error-message">' + message + '.</p>' +
@@ -141,14 +139,14 @@ const errorMessage = function (message, tryAgain = true) {
  *  Modal display & hide
  *********************************************************/
 
-const displayModal = function (message) {
+function displayModal(message) {
 
     modalMessage.innerHTML = message;
 
     modal.style.display = 'flex';
 }
 
-const hideModal = function () {
+function hideModal() {
 
     modal.style.display = 'none';
 }
@@ -158,7 +156,7 @@ const hideModal = function () {
  *  Request handlers
  *********************************************************/
 
-const addItemHandler = function (event) {
+function addItemHandler(event) {
     event.preventDefault();
 
     const name = addItem.value.trim();
@@ -168,56 +166,72 @@ const addItemHandler = function (event) {
         return;
     }
 
-    axios.post('/', { name, ui: true })
+    fetch(apiUrl + '/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, ui: true }),
+    })
+        .then(function (res) {
+            if (!res.ok) {
+                throw new Error('API response was not ok.');
+            }
+
+            return res.text();
+        })
         .then(function (res) {
             // Reset input field and add the new item
             addItem.value = '';
-            // console.log(res.data);
-            addItemToItems(res.data);
-        })
-        .catch(function (error) {
-            displayModal(errorMessage('Could not add ' + name))
-        })
 
+            addItemToItems(res);
+        })
+        .catch(function () {
+            displayModal(errorMessage('Could not add ' + name))
+        });
 }
 
 
-const deleteAllItemsHandler = function () {
+function deleteAllItemsHandler() {
 
     hideModal();
 
     // Skip api request if items already empty
     if (!items.firstElementChild) return;
 
-    axios.delete('/')
+    fetch(apiUrl + '/', {
+        method: 'DELETE',
+    })
         .then(deleteAllItems)
-        .catch(function (error) {
+        .catch(function () {
             displayModal(errorMessage('Could not delete all items'));
-        })
-
+        });
 }
 
 
-const deleteItemHandler = function (itemElement) {
+function deleteItemHandler(itemElement) {
     itemElement.blur();
 
     const itemId = itemElement.dataset.itemId;
 
-    axios.delete('/' + itemId)
+    fetch(apiUrl + '/' + itemId, {
+        method: 'DELETE',
+    })
         .then(function (res) {
+            if (!res.ok) {
+                throw new Error('API response was not ok.');
+            }
+
             deleteElement(itemElement);
         })
-        .catch(function (error) {
+        .catch(function () {
             const itemName = itemElement.querySelector('.item-name');
             const name = itemName.value || 'item';
 
             displayModal(errorMessage('Could not delete ' + name));
-        })
-
+        });
 }
 
 
-const updateItemHandler = function (itemElement) {
+function updateItemHandler(itemElement) {
 
     const id = itemElement.dataset.itemId;
     const itemName = itemElement.querySelector('.item-name');
@@ -230,10 +244,21 @@ const updateItemHandler = function (itemElement) {
         return;
     }
 
-    axios.put('/' + id, { name, ui: true })
+    fetch(apiUrl + '/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, ui: true }),
+    })
+        .then(function (res) {
+            if (!res.ok) {
+                throw new Error('API response was not ok.');
+            }
+
+            return res.json();
+        })
         .then(function (res) {
 
-            if (res.data.error === 404) {
+            if (res.error === 404) {
                 // Item not found, remove it from ui
                 displayModal(errorMessage('The item has been deleted by someone else', false));
                 deleteElement(itemElement);
@@ -241,13 +266,13 @@ const updateItemHandler = function (itemElement) {
             }
 
             // Update values
-            itemName.dataset.value = res.data.name;
-            itemName.value = res.data.name;
+            itemName.dataset.value = res.name;
+            itemName.value = res.name;
 
             // Toggle edit buttons
             toggleItemEdit(itemElement);
         })
-        .catch(function (error) {
+        .catch(function () {
             displayModal(errorMessage('Could not update ' + name));
         });
 }
@@ -313,11 +338,15 @@ document.documentElement.addEventListener('click', function (event) {
     if (event.target === modal || event.target.closest('.close-modal') ||
         event.target.matches('[data-modal-btn="cancel"]')) {
 
+        event.preventDefault();
+
         hideModal();
         return;
     }
 
     if (event.target.matches('[data-modal-btn="delete_all"]')) {
+
+        event.preventDefault();
 
         deleteAllItemsHandler();
         return;
@@ -327,11 +356,15 @@ document.documentElement.addEventListener('click', function (event) {
 
     if (event.target.closest('[data-item-btn="delete"]')) {
 
+        event.preventDefault();
+
         deleteItemHandler(item);
         return;
     }
 
     if (event.target.closest('[data-item-btn="edit"]')) {
+
+        event.preventDefault();
 
         toggleItemEdit(item, true);
         return;
@@ -339,14 +372,18 @@ document.documentElement.addEventListener('click', function (event) {
 
     if (event.target.closest('[data-item-btn="update"]')) {
 
+        event.preventDefault();
+
         updateItemHandler(item);
         return;
     }
 
     if (event.target.closest('[data-btn="delete all"]')) {
 
+        event.preventDefault();
+
         displayModal(deleteAllReminder);
         return;
     }
 
-});
+}, false);

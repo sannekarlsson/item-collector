@@ -1,48 +1,44 @@
 {
   "name": "item-collector",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Full stack item collector",
   "private": true,
   "author": "Sanne Karlsson",
   "license": "MIT",
   "scripts": {
-    "project:comment": "# build files before adding to git",
-    "build": "parcel build src/*/main.* -d public",
-    "clean": "rm -rf .cache & rm -rf public",
-    "dev": "nodemon -V -w views -w src",
-    "mongo": "mongod",
-    "mongo:close": "kill $(lsof -ti :27017) # :27017 is the mongod port",
+    "build": "parcel build src/*/main.* --dist-dir public",
+    "prebuild": "rm -rf .parcel-cache & rm -rf public",
     "postbuild": "cp -R src/images public/images",
-    "postjest": "npm run mongo:close -s",
-    "postjest:watch": "npm run mongo:close -s",
-    "prebuild": "npm run clean -s",
-    "start:comment:production": "# when start locally, prepend with: env NODE_ENV=production",
-    "start:comment": "# when running locally: node -r dotenv/config server.js",
+    "dev": "nodemon -V -w views -w src -r dotenv/config server.js",
+    "predev": "npm run build",
+    "start-local": "env NODE_ENV=production node -r dotenv/config server.js",
+    "prestart-local": "npm run build",
     "start": "node server.js",
-    "jest": "jest --coverage",
-    "jest:watch": "jest --watchAll --coverage",
-    "test": "npm-run-all -p mongo jest",
-    "test:watch": "npm-run-all -p mongo jest:watch"
+    "mongo": "brew services run mongodb-community # local mongodb",
+    "mongo-close": "brew services stop mongodb-community",
+    "jest": "jest --coverage --verbose",
+    "test": "run-p mongo jest && npm run mongo-close"
   },
   "dependencies": {
-    "axios": "^0.21.1",
     "compression": "^1.7.4",
     "dotenv": "^8.2.0",
     "express": "^4.16.4",
-    "express-validator": "^5.3.1",
+    "express-validator": "^6.13.0",
     "helmet": "^3.21.2",
-    "mongoose": "^5.13.5",
-    "pug": "^3.0.1"
+    "mongoose": "^6.0.11",
+    "parcel": "^2.0.0",
+    "pug": "^3.0.2"
   },
   "devDependencies": {
+    "@parcel/transformer-sass": "^2.0.0",
     "autoprefixer": "^9.8.6",
-    "jest": "^24.9.0",
+    "jest": "^27.3.1",
     "morgan": "^1.9.1",
-    "nodemon": "^2.0.4",
+    "nodemon": "^2.0.14",
     "npm-run-all": "^4.1.5",
-    "parcel-bundler": "^1.12.4",
-    "sass": "^1.26.10",
-    "supertest": "^4.0.2"
+    "postcss": "^8.3.9",
+    "sass": "^1.43.2",
+    "supertest": "^6.1.6"
   },
   "browserslist": [
     "> 0.5%",
@@ -52,7 +48,7 @@
     "iOS > 10"
   ],
   "engines": {
-    "node": "12.0.0"
+    "node": ">=12.0.0"
   },
   "jest": {
     "testEnvironment": "node"

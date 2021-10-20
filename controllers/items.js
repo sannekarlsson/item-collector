@@ -100,7 +100,8 @@ exports.deleteAllItems = (req, res, next) => {
 
     Item.deleteMany({})
         .then(result => {
-            if (result.ok !== 1) {
+
+            if (result.deletedCount === 0) {
                 return res.status(404).send('Could not delete all items.');
             }
 

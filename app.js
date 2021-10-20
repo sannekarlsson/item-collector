@@ -29,12 +29,6 @@ if (app.get('env') === 'development') {
     // Logger
     const logger = require('morgan');
     app.use(logger('dev'));
-
-    // Parcel bundler
-    const Bundler = require('parcel-bundler');
-    const entryFiles = [path.join(__dirname, 'src/*/main.*'), path.join(__dirname, 'src/images/*')];
-    const bundler = new Bundler(entryFiles, { outDir: 'public' });
-    app.use(bundler.middleware());
 }
 
 // data sent as JSON, using Content-Type: application/json
