@@ -2,7 +2,7 @@
 
 Full stack app with a backend CRUD api tied to a mongo database.
 
-[Running at glitch](https://item-collector.glitch.me)
+~~[Running at glitch](https://item-collector.glitch.me)~~ Glitch ended project hosting on July 8, 2025.
 
 
 ## Functionality
